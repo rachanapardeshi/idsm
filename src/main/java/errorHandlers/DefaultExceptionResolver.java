@@ -17,6 +17,8 @@ public class DefaultExceptionResolver extends GenericAbstractHandler {
 
         logger.error("Throwable error description: " + e.getMessage());
         logger.error("Throwable error. ", e);
+      //  System.out.println("Getmessage::::::::::::"+e.getMessage());
+        
         String requestId = "requestId";
         ErrorCode errorCode = ErrorCode.ERR1500;
         ErrorListResource resource = new ErrorListResource(requestId, new ErrorMessage(errorCode, null));

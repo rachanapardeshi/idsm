@@ -4,8 +4,11 @@ package com.dealersocket.idsm.controller;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -17,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -42,6 +46,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import service.VehicleAccountService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -49,7 +54,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RequestMapping(value=ControllerConstants.API_BASE_PATH + "/account",produces= MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Task Services", description = "Task operations")
 public class TaskController {
-
+	 private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+		
 	VehicleDetailsDao vehicleDao;
 
 	@Autowired
@@ -69,22 +75,25 @@ public class TaskController {
 		@ApiResponse(responseCode = "401", description = ControllerConstants.UNAUTHORIZED, content = @Content(schema = @Schema(implementation = ErrorListResource.class))),
 		@ApiResponse(responseCode = "200", description = ControllerConstants.OK, content = @Content(schema = @Schema(implementation = ErrorListResource.class)))	
 	})
-	public Data getAccountTypeList(
-	@Parameter(description = "InstitutionID", required = false) @RequestParam(name = "InstitutionID", required = true) String instId,
-	@Parameter(description = "LayoutId", required = false) @RequestParam(name = "LayoutID", required = true) String layoutId, 
-	@Parameter(description = "PageNumber", required = false) @RequestParam(name = "pageNumber", required = true) String pageNumber
-	) throws Exception {
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<Data> getAccountTypeList(
+	@Parameter(description = "InstitutionID", required = false) @RequestParam(name = "InstitutionID", required = true) int instId,
+	@Parameter(description = "LayoutId", required = false) @RequestParam(name = "LayoutID", required = true) int layoutId, 
+	@Parameter(description = "PageNumber", required = false) @RequestParam(name = "pageNumber", required = true) int pageNumber
+	) throws ParseException   {
 		VehicleDetails_CreateResource body = new VehicleDetails_CreateResource();
 		RootModel rm = getAccountListResponse(instId, layoutId,  pageNumber);
+		ResponseEntity<Data> dataResponse ;
 		Data d = new Data();
-		ArrayList<Data> dataList = rm.getData();
-		for(Data rec : dataList )
+		LinkedHashSet<Data> set =  rm.getData();
+		for(Data rec : set )
 		{     
 			VehicleDetailsModel vh = body.toEntityData(rec.getRow());
-			System.out.println("VH "+vh.toString());
-			vehicleDao.insertVehicleDetails(vh);
-		}
-		return d;	
+			//vehicleDao.insertVehicleDetails(vh);
+			vehicleDao.saveAccount(vh);		
+		}	
+		logger.info("Records Insertion Completed......");
+		return dataResponse = new ResponseEntity<Data>(d, HttpStatus.OK);	
 	}
 	
 	//get Vehicle details from DB 
@@ -105,7 +114,7 @@ public class TaskController {
 	}
 
 	
-	public RootModel getAccountListResponse(String instId,String layoutId, String pageNumber )
+	public RootModel getAccountListResponse(int instId,int layoutId, int pageNumber )
 	{
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String,String>();
 		RestTemplate restTemplate = new RestTemplate();
@@ -113,17 +122,19 @@ public class TaskController {
 		String responseVar= null;
 		HttpEntity<RootModel> entity1 = null ;
 		try {
+			logger.info("Token Generated successfully!!!!!!!!!!!! ");
 			parameters.put("Token",tokenService.getToken());
-			parameters.put("InstitutionID",instId);
-			parameters.put("LayoutID",layoutId);
-			parameters.put("PageNumber",pageNumber);
+			parameters.put("InstitutionID", Integer.toString(instId));
+			parameters.put("LayoutID",Integer.toString(layoutId));
+			parameters.put("PageNumber",Integer.toString(pageNumber));
 
-			String localUrl=tokenService.properties.getBaseurl()+"/Account/GetAccountList";
+			String localUrl=tokenService.custProps.getBaseurl()+"/Account/GetAccountList";
 			localUrl = tokenService.appendToUrl(localUrl, parameters);	
-			HttpHeaders headers =  tokenService.createHttpHeaders("abc","test"); 
+			HttpHeaders headers =  tokenService.createHttpHeaders(tokenService.custProps.getUname(),tokenService.custProps.getPwd()); 
 			HttpEntity<RootModel> entity = new HttpEntity<>(responseModel,headers);
 			responseVar = restTemplate.exchange(  localUrl, HttpMethod.GET,entity, String.class).getBody(); 
 			responseModel = getResponse( responseVar);
+			logger.info("Fetched Account Data from IDSM Server.........");
 		}
 		catch (HttpStatusCodeException ex) {
 			entity1 = new ResponseEntity<RootModel>(responseModel, ex.getStatusCode());

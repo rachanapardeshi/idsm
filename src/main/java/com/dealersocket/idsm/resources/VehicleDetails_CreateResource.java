@@ -1,5 +1,6 @@
 package com.dealersocket.idsm.resources;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -127,7 +128,7 @@ public class VehicleDetails_CreateResource extends RepresentationModel<VehicleDe
 		this.borrower1LastName = borrower1LastName;
 	}
 
-	  public VehicleDetailsModel toEntityData(Row model ) throws Exception {
+	  public VehicleDetailsModel toEntityData(Row model ) throws ParseException  {
 		   
 		    VehicleDetailsModel vm = new VehicleDetailsModel();	
 		    vm.setContractSalesPrice(model.getContractSalesPrice());

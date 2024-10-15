@@ -1,6 +1,7 @@
 package com.dealersocket.idsm.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -23,7 +24,7 @@ public class RootModel {
     @JsonProperty("EndingPage") 
     public String endingPage;
     @JsonProperty("Data") 
-    public ArrayList<Data> data;
+    public LinkedHashSet<Data> data;
 	public String getStatus() {
 		return status;
 	}
@@ -66,10 +67,10 @@ public class RootModel {
 	public void setEndingPage(String endingPage) {
 		this.endingPage = endingPage;
 	}
-	public ArrayList<Data> getData() {
+	public LinkedHashSet<Data> getData() {
 		return data;
 	}
-	public void setData(ArrayList<Data> data) {
+	public void setData(LinkedHashSet<Data> data) {
 		this.data = data;
 	}
     

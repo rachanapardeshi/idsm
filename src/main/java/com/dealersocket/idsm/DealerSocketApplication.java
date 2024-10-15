@@ -188,28 +188,7 @@ public class DealerSocketApplication {
 	}
 
 
-	@Bean
-	public HandlerExceptionResolverComposite handlerExceptionResolverComposite() {
-		List<HandlerExceptionResolver> resolvers = new ArrayList<>();
-		resolvers.add(new ConstraintViolationExceptionResolver(jacksonBuilder()));
-		/*
-		 * resolvers.add(new HibernateJdbcExceptionResolver(jacksonBuilder()));
-		 * resolvers.add(new SQLExceptionResolver(jacksonBuilder())); resolvers.add(new
-		 * SQLGrammarExceptionResolver(jacksonBuilder())); resolvers.add(new
-		 * DataExceptionResolver(jacksonBuilder()));
-		 */
-		
-		
-		DefaultExceptionResolver defaultExceptionResolver = new DefaultExceptionResolver(jacksonBuilder());
-
-		HandlerExceptionResolverComposite composite = new HandlerExceptionResolverCompositeWithCause(
-				defaultExceptionResolver);
-		
-		composite.setOrder(Integer.MIN_VALUE);
-		composite.setExceptionResolvers(resolvers);
-		return composite;
 	
-	}
 	  @Bean public FilterRegistrationBean corsFilter() { 
 		  Filter filter = new CorsFilter(); 
 		  FilterRegistrationBean registrationBean = new

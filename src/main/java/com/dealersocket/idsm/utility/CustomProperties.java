@@ -11,37 +11,37 @@ public class CustomProperties {
 	public CustomProperties() {
 	}
 
-	@Value("${username}")
-	private String username;
-
-	@Value("${password}")
-	private String password;
-	
 	@Value("${InstitutionID}")
 	private String institutionID;
 
 	@Value("${baseurl}")
 	private String baseurl;
 
-	public String getUsername() {
-		return username;
+	@Value("${uname}")
+	private String uname;
+
+	@Value("${pwd}")
+	private String pwd;
+
+
+	public String getUname() {
+		return uname;
 	}
 
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUname(String uname) {
+		this.uname = uname;
 	}
 
 
-	public String getPassword() {
-		return password;
+	public String getPwd() {
+		return pwd;
 	}
 
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
 	}
-
 
 
 	public String getBaseurl() {

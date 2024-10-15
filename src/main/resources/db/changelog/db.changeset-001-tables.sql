@@ -48,8 +48,7 @@ CREATE TABLE IF NOT EXISTS vehicleDetails (
   contractSalesPrice BIGINT , 
   inserted_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-    UNIQUE INDEX vehicle_acctID (acctID));
+  PRIMARY KEY (id));
   
   
   

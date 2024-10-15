@@ -27,31 +27,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class TokenGenerator {
-    public CustomProperties properties = new CustomProperties();	
+    public CustomProperties custProps = new CustomProperties();	
 	
     private static final Logger logger = LoggerFactory.getLogger(TokenGenerator.class);
 	
-	public TokenGenerator(CustomProperties properties) {
-		this.properties = properties;
+	public TokenGenerator(CustomProperties custProps) {
+		this.custProps = custProps;
 	}
 	
 	public  String  getToken() 
 	{		
-		String tokenURL = properties.getBaseurl()+"/authenticate/GetUserAuthorizationToken"; 
-	   
+		String tokenURL = custProps.getBaseurl()+"/authenticate/GetUserAuthorizationToken"; 	   
 	    LinkedHashMap<String, String> parameters = new LinkedHashMap<String,String>();
-	    parameters.put("username",properties.getUsername());
-	    parameters.put("password",properties.getPassword());
-	    parameters.put("InstitutionID",properties.getInstitutionID());
-	    String responseVar= null;
+	    parameters.put("username",custProps.getUname());
+	    parameters.put("password",custProps.getPwd());
+	    parameters.put("InstitutionID",custProps.getInstitutionID());
+	   
+	    String responseVar = null;
 	    RestTemplate restTemplate = new RestTemplate();
 	    try {
 	    	
-	        HttpHeaders headers = createHttpHeaders("abc","abc");
+	        HttpHeaders headers = createHttpHeaders(custProps.getUname(),custProps.getPwd());
 	        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 	  
 	        tokenURL = appendToUrl(tokenURL,parameters);
-
+         
 	        //ResponseEntity<String> response = restTemplate.exchange( url, HttpMethod.GET, entity, String.class);
 	       
 	        responseVar  = restTemplate.exchange(tokenURL, HttpMethod.GET, entity, String.class).getBody();
@@ -59,8 +59,8 @@ public class TokenGenerator {
 	        ResponseJson rs = getResponse(responseVar);
 	        return rs.getToken();
 	    }
-	    catch (Exception eek) {
-	        eek.printStackTrace();
+	    catch (Exception exp) {
+	        logger.info(exp.getMessage());
 	    }
 		return null;
 	}	
@@ -89,7 +89,7 @@ public class TokenGenerator {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    headers.add("Authorization", encodedAuth);
-	    //headers.add("InstitutionID", "107007");
+	
 	    return headers;
 	}
 	
